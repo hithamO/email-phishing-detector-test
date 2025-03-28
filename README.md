@@ -136,7 +136,10 @@ email_phishing_detector/
 
 ### B. Workflow
 
-**1. Input Validation → 2. Header/Body Analysis → 3. AI Evaluation → 4. Report Generation**
+#### Input Validation: *Validates the email file (e.g., size, format).*
+#### Header/Body Analysis: *Analyzes headers (SPF, DKIM, etc.), body content, and attachments, including VirusTotal scans.*
+#### AI Evaluation: *Uses DeepSeek to evaluate all analysis data, including VirusTotal results, for a final verdict.*
+#### Report Generation: *Produces a detailed report in the console and optional JSON file.*
 
 ## Critical Security Checks
 
@@ -152,14 +155,14 @@ email_phishing_detector/
 ## Example output (with colors in terminal):
 
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                                FINAL VERDICT                                 │
-│                                SUSPICIOUS                                    │
-│ Confidence: 75.0%                                                            │
+│                                FINAL VERDICT                                                        │
+│                                SUSPICIOUS                                                           │
+│                                Confidence: 75.0%                                                    │
 └──────────────────────────────────────────────────────────────────────────────┘
 
 ANALYSIS FINDINGS:
   The email appears to be a phishing attempt due to several suspicious elements.
-  The sender's email address 'hhiitthhaamm12345666@gmail.com' is unusual and
+  The sender's email address '***********' is unusual and
   resembles a randomly generated address. The email content urges the recipient
   to verify their account details by clicking on a link, which is a common tactic
   used in phishing attacks. The link provided 'http://google.com/' appears to be
@@ -172,7 +175,7 @@ ANALYSIS FINDINGS:
   overall context and suspicious elements make it highly suspicious.
 
 🚩 RED FLAGS DETECTED:
-  1. Unusual sender email address: 'hhiitthhaamm12345666@gmail.com'
+  1. Unusual sender email address: '**********'
   2. Suspicious display text for the link: 'goo00000gle.com'
   3. Urgent call to action with a threat of account suspension
   4. Email content resembles a phishing attempt
@@ -185,9 +188,6 @@ ANALYSIS FINDINGS:
   4. Consider enabling two-factor authentication on your accounts for added
      security.
 
-================================================================================
-Note: This analysis is automated. Always use human judgment for final decisions.
-================================================================================
 
 ## FAQ
 Q: Can this analyze emails directly from Gmail?
