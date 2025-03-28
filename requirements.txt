@@ -1,0 +1,6 @@
+requests>=2.28.0,<3.0.0
+urllib3>=1.26.0,<2.0.0
+virustotal-python>=0.1.3,<1.0.0
+# Security scanning can be done with tools like:
+# pip-audit (run: pip-audit)
+# safety (run: safety check)
