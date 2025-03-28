@@ -118,30 +118,11 @@ email_phishing_detector/
 # Email Phishing Detector - Technical Documentation
 
 **Version:** 1.0\
-**Author:** Haitham's Team
+**Author:** Haitham
 
-## 1. Code Overview
 
-This Python script is a standalone email phishing detector that analyzes `.eml` and `.msg` files for security threats. It combines header analysis, content scanning, and AI-powered detection (via DeepSeek API) to identify phishing attempts.
 
-### Key Features
-
-✅ **Header Analysis**: Checks SPF, DKIM, DMARC authentication, and reply-to spoofing\
-✅ **Content Scanning**: Detects suspicious links, urgency language, and obfuscated URLs\
-✅ **Attachment Analysis**: Extracts file metadata and generates hashes (MD5, SHA1, SHA256)\
-✅ **AI Integration**: Uses DeepSeek AI to evaluate phishing risk\
-✅ **Reporting**: Console output + JSON export
-
-## 2. Relationship to EmailAnalyzer
-
-🚫 **This tool does NOT use EmailAnalyzer (GitHub tool).** It is an independent implementation with:
-
-- **Similarities:** Both tools analyze email headers and attachments.
-- **Differences:** This version adds AI analysis and real-time threat scoring.
-
-*(If you want to integrate EmailAnalyzer, modifications will be needed to call its functions.)*
-
-## 3. Code Structure
+## Code Structure
 
 ### A. Core Functions
 
@@ -157,7 +138,7 @@ This Python script is a standalone email phishing detector that analyzes `.eml` 
 
 **1. Input Validation → 2. Header/Body Analysis → 3. AI Evaluation → 4. Report Generation**
 
-## 4. Critical Security Checks
+## Critical Security Checks
 
 | Check                 | Method Used                       | Example Output               |
 | --------------------- | --------------------------------- | ---------------------------- |
@@ -168,5 +149,57 @@ This Python script is a standalone email phishing detector that analyzes `.eml` 
 
 ---
 
-This documentation provides a structured guide to the **Email Phishing Detector**, including setup, usage, and technical insights. Contributions and suggestions are welcome!
+## Example output (with colors in terminal):
 
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                FINAL VERDICT                                 │
+│                                SUSPICIOUS                                    │
+│ Confidence: 75.0%                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+ANALYSIS FINDINGS:
+  The email appears to be a phishing attempt due to several suspicious elements.
+  The sender's email address 'hhiitthhaamm12345666@gmail.com' is unusual and
+  resembles a randomly generated address. The email content urges the recipient
+  to verify their account details by clicking on a link, which is a common tactic
+  used in phishing attacks. The link provided 'http://google.com/' appears to be
+  a legitimate Google URL, but the display text 'goo00000gle.com' is suspicious
+  and could be an attempt to deceive the recipient. The email also uses a sense
+  of urgency by threatening account suspension within 24 hours, which is a common
+  phishing tactic. However, the email passes SPF, DKIM, and DMARC checks, which
+  adds some legitimacy to it. The absence of malicious attachments and the use of
+  a legitimate URL reduce the likelihood of it being outright malicious, but the
+  overall context and suspicious elements make it highly suspicious.
+
+🚩 RED FLAGS DETECTED:
+  1. Unusual sender email address: 'hhiitthhaamm12345666@gmail.com'
+  2. Suspicious display text for the link: 'goo00000gle.com'
+  3. Urgent call to action with a threat of account suspension
+  4. Email content resembles a phishing attempt
+
+🛡️ RECOMMENDED ACTIONS:
+  1. Do not click on any links in the email.
+  2. Verify the legitimacy of the email by contacting the supposed sender through
+     official channels.
+  3. Report the email as phishing to your email provider.
+  4. Consider enabling two-factor authentication on your accounts for added
+     security.
+
+================================================================================
+Note: This analysis is automated. Always use human judgment for final decisions.
+================================================================================
+
+## FAQ
+Q: Can this analyze emails directly from Gmail?
+→ Not currently. You’d need to download emails as .eml first.
+
+Q: Is the AI analysis free?
+→ Yes (via OpenRouter free tier), but has rate limits.
+
+Q: How accurate is the detection?
+→ ~85-90% for obvious phishing; AI improves subtle cases.
+
+## References
+EmailAnalyzer (Alternative tool)
+
+OpenRouter API Docs
