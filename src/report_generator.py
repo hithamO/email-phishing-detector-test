@@ -6,20 +6,39 @@ import logging
 logger = logging.getLogger(__name__)
 
 def print_ai_analysis(ai_data: Dict) -> None:
-    """Print AI analysis results"""
+    """Print AI analysis results with updated fields"""
     if not ai_data:
         print("❌ No AI analysis available")
         return
     
     verdict = ai_data.get('verdict', 'UNKNOWN').upper()
     confidence = float(ai_data.get('confidence', 0)) * 100
+    phishing_score = ai_data.get('phishing_score', 0)
+    brands = ai_data.get('brands', 'None')
+    phishing = ai_data.get('phishing', None)
+    suspicious_domain = ai_data.get('suspicious_domain', None)
     verdict_color = '\033[91m' if verdict in ['SUSPICIOUS', 'MALICIOUS'] else '\033[92m' if verdict == 'CLEAN' else '\033[93m'
     
     print(f"\n{verdict_color}┌{'─'*78}┐")
     print(f"│{' FINAL VERDICT (Including VirusTotal Data) ':^78}│")
     print(f"│{verdict_color}{verdict:^78}\033[0m│")
     print(f"│{' Confidence: ':<39}{confidence:.1f}%{' ':>38}│")
+    print(f"│{' Phishing Score (0-10): ':<39}{phishing_score}{' ':>38}│")
     print(f"└{'─'*78}┘\033[0m")
+    
+    print(f"\n\033[1mDETAILS:\033[0m")
+    print(f"  Identified Brand: {brands}")
+    print(f"  Phishing: {'Yes' if phishing is True else 'No' if phishing is False else 'Unknown'}")
+    print(f"  Suspicious Domain: {'Yes' if suspicious_domain is True else 'No' if suspicious_domain is False else 'Unknown'}")
+    
+    if ai_data.get('VirusTotal'):
+        vt = ai_data['VirusTotal']
+        print(f"\n\033[1mVIRUSTOTAL SUMMARY:\033[0m")
+        print(f"  Total Malicious Detections: {vt.get('malicious_count', 0)}")
+        print(f"  Total Suspicious Detections: {vt.get('suspicious_count', 0)}")
+        print(f"  Malicious IPs: {vt.get('IP_scan', 0)}")
+        print(f"  Malicious URLs: {vt.get('URL_scan', 0)}")
+        print(f"  Malicious Attachments: {vt.get('attachment_scan', 0)}")
     
     explanation = ai_data.get('explanation', 'No explanation provided')
     print(f"\n\033[1mANALYSIS FINDINGS:\033[0m")

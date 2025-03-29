@@ -15,11 +15,11 @@ def check_virustotal_ip(ip: str) -> Dict:
     if not CONFIG.get("VIRUSTOTAL_API_KEY"):
         logger.warning("VirusTotal API key not configured")
         return {"error": "API key not configured"}
-    
     with virustotal_python.Virustotal(CONFIG.get("VIRUSTOTAL_API_KEY")) as vtotal:
         try:
             resp = vtotal.request(f"ip_addresses/{ip}")
-            return resp.data
+            stats = resp.data.get("attributes", {}).get("last_analysis_stats", {})
+            return {"malicious": stats.get("malicious", 0), "suspicious": stats.get("suspicious", 0)}
         except Exception as e:
             logger.error(f"VirusTotal IP check failed for {ip}: {e}")
             return {"error": str(e)}
@@ -29,20 +29,17 @@ def check_virustotal_url(url: str) -> Dict:
     if not CONFIG.get("VIRUSTOTAL_API_KEY"):
         logger.warning("VirusTotal API key not configured")
         return {"error": "API key not configured"}
-    
     with virustotal_python.Virustotal(CONFIG.get("VIRUSTOTAL_API_KEY")) as vtotal:
         try:
-            # Submit URL for analysis
             resp = vtotal.request("urls", data={"url": url}, method="POST")
             analysis_id = resp.data["id"]
-            
-            # Poll for analysis results (max 5 attempts, 5 seconds apart)
             for _ in range(5):
                 analysis_resp = vtotal.request(f"analyses/{analysis_id}")
                 status = analysis_resp.data.get("attributes", {}).get("status", "queued")
                 if status == "completed":
-                    return analysis_resp.data
-                time.sleep(5)  # Wait before next check
+                    stats = analysis_resp.data.get("attributes", {}).get("stats", {})
+                    return {"malicious": stats.get("malicious", 0), "suspicious": stats.get("suspicious", 0)}
+                time.sleep(5)
             logger.warning(f"VirusTotal URL analysis for {url} timed out")
             return {"error": "Analysis timeout"}
         except Exception as e:
@@ -54,11 +51,11 @@ def check_virustotal_file_hash(hash: str) -> Dict:
     if not CONFIG.get("VIRUSTOTAL_API_KEY"):
         logger.warning("VirusTotal API key not configured")
         return {"error": "API key not configured"}
-    
     with virustotal_python.Virustotal(CONFIG.get("VIRUSTOTAL_API_KEY")) as vtotal:
         try:
             resp = vtotal.request(f"files/{hash}")
-            return resp.data
+            stats = resp.data.get("attributes", {}).get("last_analysis_stats", {})
+            return {"malicious": stats.get("malicious", 0), "suspicious": stats.get("suspicious", 0)}
         except Exception as e:
             logger.error(f"VirusTotal file check failed for {hash}: {e}")
             return {"error": str(e)}
@@ -88,7 +85,7 @@ def analyze_headers(msg: EmailMessage) -> Dict:
             headers["VirusTotal"]["ip_results"] = {}
             for ip in ip_addresses:
                 headers["VirusTotal"]["ip_results"][ip] = check_virustotal_ip(ip)
-                time.sleep(15)  # Basic rate limiting: 4 requests/minute = 15s delay
+                time.sleep(15)
     
     return headers
 
@@ -169,7 +166,7 @@ def extract_links(content: str) -> Dict:
                 "urlscan": f"https://urlscan.io/search/#{clean_link}"
             }
             links["VirusTotal"][str(i)] = check_virustotal_url(link)
-            time.sleep(15)  # Basic rate limiting: 4 requests/minute = 15s delay
+            time.sleep(15)
     
     return links
 
@@ -195,7 +192,7 @@ def analyze_attachments(msg: EmailMessage) -> Dict:
                             "file_analysis": f"https://www.hybrid-analysis.com/search?query={file_info['hashes']['sha256']}"
                         }
                         attachments["VirusTotal"][filename] = check_virustotal_file_hash(file_info['hashes']['sha256'])
-                        time.sleep(15)  # Basic rate limiting: 4 requests/minute = 15s delay
+                        time.sleep(15)
                 except Exception as e:
                     logger.warning(f"Failed to process attachment {filename}: {e}")
                     attachments["Data"][filename] = {"error": str(e)}

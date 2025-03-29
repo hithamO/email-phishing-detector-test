@@ -36,7 +36,9 @@ def analyze_email(file_path: str, use_ai: bool = False) -> dict:
         }
         
         if use_ai:
-            results["Analysis"]["AI_Analysis"] = analyze_with_ai(results["Analysis"])
+            ai_result = analyze_with_ai(results["Analysis"])
+            results["Analysis"]["AI_Analysis"] = ai_result
+            logger.debug(f"AI Analysis Result: {json.dumps(ai_result, indent=2)}")
         
         results["Information"]["Status"] = "Analysis completed successfully"
     except Exception as e:
@@ -66,6 +68,8 @@ def main():
         print(f"\n🔍 Analyzing email: {args.file}")
         if args.ai:
             print("🤖 AI analysis enabled")
+        if CONFIG.get("VIRUSTOTAL_API_KEY"):
+            print("🛡️ VirusTotal integration enabled")
         
         results = analyze_email(args.file, args.ai)
         generate_report(results, args.verbose)
